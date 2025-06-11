@@ -9,7 +9,8 @@ let user = {
     name: "user-at",
     usual: 70,
     sp: 30
-  }
+  },
+  EV: 25
 };
 
 let mage = {
@@ -22,7 +23,8 @@ let mage = {
     name: "mage-at",
     usual: 70,
     sp: 30
-  }
+  },
+  EV: 30  
 };
 
 let enemy = {
@@ -34,7 +36,8 @@ let enemy = {
     name: "enemy-at",
     usual: 50,
     sp: 25
-  }
+  },
+  EV: 80
 };
 
 
@@ -203,13 +206,40 @@ attackBtn.addEventListener("click", () => {
   if (turn === 0){
     showLog("user",dice);
     
-    if(dice <= user.AT.usual){
+    if(dice <= user.AT.usual){//攻撃成功時
+
       setTimeout(() => {
-        if (userAttack(Dice6())) return;
-        if (turn === 1) {
-          timeEnemyAttack();
-        };        
+        showLog("user","攻撃成功！");
+      },500);
+      setTimeout(() => {
+        showLog("enemy","回避判定");
       },1000);
+
+      if (Dice100() > enemy.EV){//敵の回避失敗時
+        setTimeout(() => {
+          showLog("enemy","回避失敗！");
+        },1500);
+
+        setTimeout(() => {
+          if (userAttack(Dice6())) return;
+          if (turn === 1) {
+            timeEnemyAttack();
+          };        
+        },2000);
+      }else {//敵の回避成功時
+        setTimeout(() => {
+          showLog("enemy","回避成功！");
+        },1500);
+
+        setTimeout (() => {
+          btnDisabled(true);
+          turn += 1;
+          if (turn === 1) {
+            timeEnemyAttack();
+          };   
+        },2000);
+      };
+
     }else{
       setTimeout(() => {
         showLog("user","失敗！");
@@ -293,4 +323,4 @@ spAttackBtn.addEventListener("click", () => {
 
 
 //やったこと：ログ表示、勝利と敗北のログ、オブジェクトにまとめた、ユーザーの攻撃二択、敵の攻撃内容のランダマイズ、,mageの設定、順番、敵の攻撃表示を遅らせる,エネミーの攻撃対象ランダマイズ、敵の攻撃を待ってる間ボタンを無効化,ダイスの概念、攻撃値のダイス化
-//やってること：CSSの整え、スピードの概念と順番（発展）,回避の概念,ログの遅延(途中 敵側、敵側断念中)、
+//やってること：CSSの整え、スピードの概念と順番（発展）,回避の概念（現在進行途中）,ログの遅延(途中 敵側、敵側断念中)、
