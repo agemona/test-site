@@ -1,0 +1,55 @@
+body {
+  overflow: hidden;
+  font-size: 1.2rem;
+}
+button {
+  font-size: 1.2rem;
+  margin-top: 15px;
+}
+
+.wrapper {
+  height: 100%;
+  width: 70%;
+}
+
+.wrapper1 {
+  height: 48%;
+  margin-bottom: 5px;
+  border: solid 1px black;  
+}
+
+
+.name {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-bottom: solid 2px black;
+  margin-bottom: 10px;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  height: 100vh;
+}
+
+#log {
+  width: 29%;
+  height: 95vh;
+  overflow: auto;
+  font-size: 1rem;
+}
+
+#log p {
+  white-space: pre-line;
+}
+
+.enemy {
+  color: red;
+}
+.mage {
+  color: blue;
+}
+.user {
+  color: black;
+}

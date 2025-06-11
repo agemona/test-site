@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="test32.css">
+  <title>戦闘ゲームテスト</title>
+</head>
+<body>
+  <div class="content">
+
+    <div class="wrapper">
+      <div class="wrapper1">
+        <div style="display: flex;">
+          <div>
+            <div class="name">主人公</div>
+
+            <div>体力：<span id="user-hp">40</span></div>
+            <div>攻撃力：<span id="user-at">70%→1d6 30%→2d6</span></div>
+            <div>回避：25%</div>
+
+          </div>
+
+          <div style="margin-left: 20px;">
+            <div class="name">魔法使い</div>
+
+            <div>体力：<span id="mage-hp">30</span></div>
+            <div>攻撃力：<span id="mage-at">70%→1d6 30%→2d6</span></div>
+            <div>回避：30%</div>
+
+          </div>
+        </div>
+        
+
+        <button id="attack">通常攻撃</button>
+        <button id="sp-attack">特殊攻撃</button>
+
+      </div>
+
+      <div class="wrapper1">
+        <div class="name">エネミー</div>
+
+        <div>体力：<span id="enemy-hp">50</span></div>
+        <div>攻撃力：<span id="enemy-at">50%→1d6 25%→2d6</span></div>
+        <div>回避：25%</div>
+
+      </div>      
+    </div>
+
+
+    <div id="log"></div>  
+
+  </div>
+
+  <script src="test32.js"></script>
+</body>
+</html>
