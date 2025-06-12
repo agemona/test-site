@@ -257,7 +257,7 @@ function timeEnemyAttack () {
 
 
 attackBtn.addEventListener("click", () => {
-  const dice = Dice100();
+  const dice = 70;
   btnDisabled(true);
 
 
