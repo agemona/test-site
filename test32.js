@@ -1,6 +1,7 @@
 //駒はここへ
 let user = {
-  name:"主人公",
+  name:"user",
+  nameJ:"主人公",
   HP: {
     name: "user-hp",
     current: 40
@@ -14,7 +15,8 @@ let user = {
 };
 
 let mage = {
-  name:"魔法使い",
+  name:"mage",
+  nameJ:"魔法使い",  
   HP: {
     name: "mage-hp",
     current: 30
@@ -37,7 +39,7 @@ let enemy = {
     usual: 50,
     sp: 25
   },
-  EV: 80
+  EV: 20
 };
 
 
@@ -143,46 +145,98 @@ function enemyAttack () {
   //ランダマイズ
   function choiceAttack () {
     if (Math.random() < 0.5) {
-      if (dice <= enemy.AT.usual) {
-        return Dice6();
-      }else {
+      if (dice <= enemy.AT.usual) {//攻撃成功時
+
+        setTimeout(() => {
+          showLog("enemy","攻撃成功！");
+        },500);
+        setTimeout(() => {
+          p = String(choice.name);
+          showLog(p, "回避判定");
+        },1000);
+        
+        if (Dice100() > choice.EV) {//回避失敗時
+          setTimeout(() => {
+            showLog(choice.name, "回避失敗");
+          },1500);
+
+          return Dice6();
+        }else {//回避成功時
+          setTimeout(() => {
+            showLog(choice.name, "回避成功！");
+          },1500);
+          return true;
+        }
+      }else {//攻撃失敗時
         showLog("enemy","失敗！");
         turn += 1;
         return true;
-      }
+      };
     }else {
-      if (dice <= enemy.AT.usual) {
-        return Dice6()+Dice6();
-      }else {
-        showLog("enemy","失敗！");
+      if (dice <= enemy.AT.sp) {//攻撃成功時
+
+        setTimeout(() => {
+          showLog("enemy","攻撃成功！");
+        },500);
+        setTimeout(() => {
+          showLog(choice.name, "回避判定");
+        },1000);
+
+        
+        if (Dice100() > choice.EV) {//回避失敗時
+          setTimeout(() => {
+            showLog(choice.name, "回避失敗");
+          },1500);
+
+          return Dice6()+Dice6();
+        }else {//回避成功時
+          setTimeout(() => {
+            showLog(choice.name, "回避成功！");
+          },1500);
+          return true;
+        }
+      }else {//攻撃失敗時
+
+        setTimeout(() => {
+          showLog("enemy","失敗！");          
+        },1000);
+
         turn += 1;
         return true;
-      }
+      };
     };
   };
 
   const  choiceAT = choiceAttack();
-  if (choiceAT === true) return true
 
   //ログ
   if (choiceAT !== true) {
-    p = `敵は${choice.name}に${choiceAT}のダメージを与えた！`;
-    showLog("enemy",p);
-  };
+    setTimeout(() => {
+      //ログ
+      const p = `敵は${choice.nameJ}に${choiceAT}のダメージを与えた！`;
+      showLog("enemy",p);
 
-  //敗北条件
-  choice.HP.current -= choiceAT;
-  if (choice.HP.current <= 0) {
-    showLog("enemy","you lose!")
-    document.getElementById(choice.HP.name).textContent = 0;
-    return;
-  };
 
-  //ダメージ反映
-  document.getElementById(choice.HP.name).textContent = choice.HP.current;
+      //ダメージ反映
+      choice.HP.current -= choiceAT;
+      document.getElementById(choice.HP.name).textContent = choice.HP.current;        
+    
 
+      //敗北条件
+      if (choice.HP.current <= 0) {
+        showLog("enemy","you lose!");
+        document.getElementById(choice.HP.name).textContent = 0;
+        return;
+      };
+
+      //ターン増加
+      turn += 1;
+
+    },2000);
+  }else {
   //ターン増加
-  turn += 1;
+  turn += 1;    
+  };
 };
 
 
@@ -190,10 +244,14 @@ function enemyAttack () {
 
 //各攻撃ボタン
 function timeEnemyAttack () {
-    setTimeout(() => {
+  setTimeout(() => {
     enemyAttack();
-    btnDisabled(false);
+
   }, 1000);
+
+  setTimeout(() => {
+    btnDisabled(false);    
+  },3000);
 };
 
 
@@ -253,11 +311,32 @@ attackBtn.addEventListener("click", () => {
   }else if (turn === 2){
     showLog("mage",dice);
     
-    if(dice <= mage.AT.usual){
+    if(dice <= mage.AT.usual){//攻撃成功時
+
       setTimeout(() => {
-        if (mageAttack(Dice6())) return;
-        btnDisabled(false);
+        showLog("mage","攻撃成功！");
+      },500);
+      setTimeout(() => {
+        showLog("enemy","回避判定");
       },1000);
+
+      if (Dice100() > enemy.EV) {//敵の回避失敗時
+
+        setTimeout(() => {
+          showLog("enemy","回避失敗！");
+        },1500);
+
+        setTimeout(() => {
+          if (mageAttack(Dice6())) return;  
+          btnDisabled(false);  
+        },2000);
+      }else {//敵の回避成功時
+        setTimeout(() => {
+          showLog("enemy","回避成功！");
+          btnDisabled(false);
+          turn = 0;
+        },1500);
+      };
     }else{
       setTimeout(() => {
         showLog("mage","失敗！");
@@ -278,13 +357,40 @@ spAttackBtn.addEventListener("click", () => {
   if (turn === 0){
     showLog("user",dice);
     
-    if(dice <= user.AT.sp){
+    if(dice <= user.AT.sp){//攻撃成功時
+
       setTimeout(() => {
-        if (userAttack(Dice6()+Dice6())) return;
-        if (turn === 1) {
-          timeEnemyAttack();
-        };        
+        showLog("user","攻撃成功！");
+      },500);
+      setTimeout(() => {
+        showLog("enemy","回避判定");
       },1000);
+
+      if (Dice100() > enemy.EV){//敵の回避失敗時
+        setTimeout(() => {
+          showLog("enemy","回避失敗！");
+        },1500);
+
+        setTimeout(() => {
+          if (userAttack(Dice6()+Dice6())) return;
+          if (turn === 1) {
+            timeEnemyAttack();
+          };        
+        },2000);
+      }else {//敵の回避成功時
+        setTimeout(() => {
+          showLog("enemy","回避成功！");
+        },1500);
+
+        setTimeout (() => {
+          btnDisabled(true);
+          turn += 1;
+          if (turn === 1) {
+            timeEnemyAttack();
+          };   
+        },2000);
+      };
+
     }else{
       setTimeout(() => {
         showLog("user","失敗！");
@@ -298,11 +404,32 @@ spAttackBtn.addEventListener("click", () => {
   }else if (turn === 2){
     showLog("mage",dice);
     
-    if(dice <= mage.AT.sp){
+    if(dice <= mage.AT.sp){//攻撃成功時
+
       setTimeout(() => {
-        if (mageAttack(Dice6()+Dice6())) return;
-        btnDisabled(false);
+        showLog("mage","攻撃成功！");
+      },500);
+      setTimeout(() => {
+        showLog("enemy","回避判定");
       },1000);
+
+      if (Dice100() > enemy.EV) {//敵の回避失敗時
+
+        setTimeout(() => {
+          showLog("enemy","回避失敗！");
+        },1500);
+
+        setTimeout(() => {
+          if (mageAttack(Dice6()+Dice6())) return;  
+          btnDisabled(false);  
+        },2000);
+      }else {//敵の回避成功時
+        setTimeout(() => {
+          showLog("enemy","回避成功！");
+          btnDisabled(false);
+          turn = 0;
+        },1500);
+      };
     }else{
       setTimeout(() => {
         showLog("mage","失敗！");
@@ -322,5 +449,5 @@ spAttackBtn.addEventListener("click", () => {
 
 
 
-//やったこと：ログ表示、勝利と敗北のログ、オブジェクトにまとめた、ユーザーの攻撃二択、敵の攻撃内容のランダマイズ、,mageの設定、順番、敵の攻撃表示を遅らせる,エネミーの攻撃対象ランダマイズ、敵の攻撃を待ってる間ボタンを無効化,ダイスの概念、攻撃値のダイス化
-//やってること：CSSの整え、スピードの概念と順番（発展）,回避の概念（現在進行途中）,ログの遅延(途中 敵側、敵側断念中)、
+//やったこと：ログ表示、勝利と敗北のログ、オブジェクトにまとめた、ユーザーの攻撃二択、敵の攻撃内容のランダマイズ、,mageの設定、順番、敵の攻撃表示を遅らせる,エネミーの攻撃対象ランダマイズ、敵の攻撃を待ってる間ボタンを無効化,ダイスの概念、攻撃値のダイス化、回避の概念
+//やってること：CSSの整え、スピードの概念と順番（発展）,ログの遅延（敵側失敗表示の遅延が変）、激しく関数化した方がいい。
