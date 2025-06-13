@@ -138,9 +138,12 @@ function mageAttack(damage) {//魔法使い
 
 function enemyAttack () {
   const dice = Dice100();
-  showLog("enemy",dice);
+  const dice1 = Dice100();//回避用
 
   const choice = Math.random() < 0.5 ? user : mage;
+  const p1 =`攻撃対象 ＞ ${choice.nameJ}`;
+  showLog("enemy",p1);
+
 
   //ランダマイズ
   function choiceAttack () {
@@ -148,56 +151,64 @@ function enemyAttack () {
       if (dice <= enemy.AT.usual) {//攻撃成功時
 
         setTimeout(() => {
-          showLog("enemy","攻撃成功！");
+          let result = `1d100<=50 ＞ ${dice} ＞ 成功！`;
+          showLog("enemy",result);
         },500);
-        setTimeout(() => {
-          p = String(choice.name);
-          showLog(p, "回避判定");
-        },1000);
-        
-        if (Dice100() > choice.EV) {//回避失敗時
+        showLogEV(choice.name,1000);//回避判定
+
+        if (dice1 > choice.EV) {//回避失敗時
+
           setTimeout(() => {
-            showLog(choice.name, "回避失敗");
+            let result = `1d100<=${choice.EV} ＞ ${dice1} ＞ 失敗`;
+            showLog(choice.name,result);
           },1500);
 
           return Dice6();
         }else {//回避成功時
           setTimeout(() => {
-            showLog(choice.name, "回避成功！");
+            let result = `1d100<=${choice.EV} ＞ ${dice1} ＞ 成功！`;
+            showLog(choice.name,result);
           },1500);
           return true;
         }
       }else {//攻撃失敗時
-        showLog("enemy","失敗！");
+        
+        setTimeout(() => {
+          let result = `1d100<=50 ＞ ${dice} ＞ 失敗`;
+          showLog("enemy",result);
+        },500);
+
         return true;
       };
     }else {
       if (dice <= enemy.AT.sp) {//攻撃成功時
 
         setTimeout(() => {
-          showLog("enemy","攻撃成功！");
+          let result = `1d100<=25 ＞ ${dice} ＞ 成功！`;
+          showLog("enemy",result);
         },500);
-        setTimeout(() => {
-          showLog(choice.name, "回避判定");
-        },1000);
+        showLogEV(choice.name,1000);//回避判定
 
         
-        if (Dice100() > choice.EV) {//回避失敗時
+        if (dice1 > choice.EV) {//回避失敗時
           setTimeout(() => {
-            showLog(choice.name, "回避失敗");
+            let result = `1d100<=${choice.EV} ＞ ${dice1} ＞ 失敗`;
+            showLog(choice.name,result);
           },1500);
 
           return Dice6()+Dice6();
         }else {//回避成功時
           setTimeout(() => {
-            showLog(choice.name, "回避成功！");
+            let result = `1d100<=${choice.EV} ＞ ${dice1} ＞ 成功！`;
+            showLog(choice.name,result);
           },1500);
           return true;
         }
       }else {//攻撃失敗時
 
         setTimeout(() => {
-          showLog("enemy","失敗！");          
+          let result = `1d100<=25 ＞ ${dice} ＞ 失敗`;
+          showLog("enemy",result);         
         },1000);
 
         return true;
@@ -256,13 +267,11 @@ function showATandEV (className){//誰かの「攻撃成功」と敵の「回避
   setTimeout(() => {
     showLog(className.name,"攻撃成功！");
   },500);
-  setTimeout(() => {
-    showLog("enemy","回避判定");
-  },1000);  
+  showLogEV("enemy",1000);//回避判定
 };
 
 function userFalse(userAt,dice) {
-  const result = `1d100<=${userAt} ＞ ${dice} ＞ 失敗`;
+  let result = `1d100<=${userAt} ＞ ${dice} ＞ 失敗`;
   showLog("user",result);
 
   btnDisabled(true);
@@ -273,33 +282,39 @@ function userFalse(userAt,dice) {
 };
 
 function mageFalse (mageAt,dice) {
-  const result = `1d100<=${mageAt} ＞ ${dice} ＞ 失敗`;
+  let result = `1d100<=${mageAt} ＞ ${dice} ＞ 失敗`;
   showLog("mage",result);
   
   btnDisabled(false);
   turn = 0;        
 };
 
+function showLogEV (className,delay = 1000) {//「誰の」回避判定のログを「何秒後」出す
+  setTimeout(() => {
+    showLog(className, "回避判定");
+  }, delay);
+}
+
 
 
 attackBtn.addEventListener("click", () => {
   const dice = Dice100();
+  const dice1 = Dice100();//敵の回避判定用
   btnDisabled(true);
 
 
   if (turn === 0){
     if(dice <= user.AT.usual){//攻撃成功時
 
-      const result = `1d100<=70 ＞ ${dice} ＞ 成功！`;
+      let result = `1d100<=70 ＞ ${dice} ＞ 成功！`;
       showLog("user",result);
 
-      setTimeout(() => {
-        showLog("enemy","回避判定");
-      },1000); 
+      showLogEV("enemy",1000);//回避判定
 
-      if (Dice100() > enemy.EV){//敵の回避失敗時
+      if (dice1 > enemy.EV){//敵の回避失敗時
         setTimeout(() => {
-          showLog("enemy","回避失敗！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 失敗`;
+          showLog("enemy",result);
         },1500);
 
         setTimeout(() => {
@@ -310,7 +325,8 @@ attackBtn.addEventListener("click", () => {
         },2000);
       }else {//敵の回避成功時
         setTimeout(() => {
-          showLog("enemy","回避成功！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 成功`;
+          showLog("enemy",result);
         },1500);
 
         setTimeout (() => {
@@ -327,17 +343,16 @@ attackBtn.addEventListener("click", () => {
   }else if (turn === 2){
 
     if(dice <= mage.AT.usual){//攻撃成功時
-      const result = `1d100<=70 ＞ ${dice} ＞ 成功！`;
+      let result = `1d100<=70 ＞ ${dice} ＞ 成功！`;
       showLog("mage",result);
 
-      setTimeout(() => {
-        showLog("enemy","回避判定");
-      },1000); 
+      showLogEV("enemy",1000);//回避判定 
 
-      if (Dice100() > enemy.EV) {//敵の回避失敗時
+      if (dice1 > enemy.EV) {//敵の回避失敗時
 
         setTimeout(() => {
-          showLog("enemy","回避失敗！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 失敗`;
+          showLog("enemy",result);
         },1500);
 
         setTimeout(() => {
@@ -346,7 +361,9 @@ attackBtn.addEventListener("click", () => {
         },2000);
       }else {//敵の回避成功時
         setTimeout(() => {
-          showLog("enemy","回避成功！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 成功`;
+          showLog("enemy",result);
+
           btnDisabled(false);
           turn = 0;
         },1500);
@@ -361,6 +378,7 @@ attackBtn.addEventListener("click", () => {
 
 spAttackBtn.addEventListener("click", () => {
   const dice = Dice100();
+  const dice1 = Dice100();//敵の回避判定用
   btnDisabled(true);
   console.log(turn);
 
@@ -369,16 +387,15 @@ spAttackBtn.addEventListener("click", () => {
     
     if(dice <= user.AT.sp){//攻撃成功時
 
-      const result = `1d100<=30 ＞ ${dice} ＞ 成功！`;
+      let result = `1d100<=30 ＞ ${dice} ＞ 成功！`;
       showLog("user",result);
 
-      setTimeout(() => {
-        showLog("enemy","回避判定");
-      },1000);
+      showLogEV("enemy",1000);//回避判定
 
-      if (Dice100() > enemy.EV){//敵の回避失敗時
+      if (dice1 > enemy.EV){//敵の回避失敗時
         setTimeout(() => {
-          showLog("enemy","回避失敗！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 失敗`;
+          showLog("enemy",result);
         },1500);
 
         setTimeout(() => {
@@ -389,7 +406,8 @@ spAttackBtn.addEventListener("click", () => {
         },2000);
       }else {//敵の回避成功時
         setTimeout(() => {
-          showLog("enemy","回避成功！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 成功`;
+          showLog("enemy",result);
         },1500);
 
         setTimeout (() => {
@@ -407,17 +425,16 @@ spAttackBtn.addEventListener("click", () => {
     
     if(dice <= mage.AT.sp){//攻撃成功時
 
-      const result = `1d100<=30 ＞ ${dice} ＞ 成功！`;
+      let result = `1d100<=30 ＞ ${dice} ＞ 成功！`;
       showLog("mage",result);
 
-      setTimeout(() => {
-        showLog("enemy","回避判定");
-      },1000);
+      showLogEV("enemy",1000);//回避判定
 
-      if (Dice100() > enemy.EV) {//敵の回避失敗時
+      if (dice1 > enemy.EV) {//敵の回避失敗時
 
         setTimeout(() => {
-          showLog("enemy","回避失敗！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 失敗`;
+          showLog("enemy",result);
         },1500);
 
         setTimeout(() => {
@@ -426,7 +443,9 @@ spAttackBtn.addEventListener("click", () => {
         },2000);
       }else {//敵の回避成功時
         setTimeout(() => {
-          showLog("enemy","回避成功！");
+          result = `1d100<=${enemy.EV} ＞ ${dice1} ＞ 成功`;
+          showLog("enemy",result);
+
           btnDisabled(false);
           turn = 0;
         },1500);
@@ -446,5 +465,5 @@ spAttackBtn.addEventListener("click", () => {
 
 
 
-//やったこと：ログ表示、勝利と敗北のログ、オブジェクトにまとめた、ユーザーの攻撃二択、敵の攻撃内容のランダマイズ、,mageの設定、順番、敵の攻撃表示を遅らせる,エネミーの攻撃対象ランダマイズ、敵の攻撃を待ってる間ボタンを無効化,ダイスの概念、攻撃値のダイス化、回避の概念
-//やってること：CSSの整え、スピードの概念と順番（発展）,ログの遅延（敵側失敗表示の遅延が変）、回避と受け流しの選択化,ココフォリアにログを近づける（現在進行　敵側）、
+//やったこと：ログ表示、勝利と敗北のログ、オブジェクトにまとめた、ユーザーの攻撃二択、敵の攻撃内容のランダマイズ、,mageの設定、順番、敵の攻撃表示を遅らせる,エネミーの攻撃対象ランダマイズ、敵の攻撃を待ってる間ボタンを無効化,ダイスの概念、攻撃値のダイス化、回避の概念,ココフォリアにログを近づける
+//やってること：CSSの整え、スピードの概念と順番（発展）,ログの遅延（敵側失敗表示の遅延が変）、回避とかばうの選択化,、
