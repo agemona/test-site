@@ -1,49 +1,4 @@
-//駒はここへ
-let user = {
-  name:"user",
-  nameJ:"主人公",
-  HP: {
-    name: "user-hp",
-    current: 40
-  },
-  AT: {
-    name: "user-at",
-    usual: 70,
-    sp: 30
-  },
-  EV: 25
-};
-
-let mage = {
-  name:"mage",
-  nameJ:"魔法使い",  
-  HP: {
-    name: "mage-hp",
-    current: 30
-  },
-  AT: {
-    name: "mage-at",
-    usual: 70,
-    sp: 30
-  },
-  EV: 30  
-};
-
-let enemy = {
-  HP: {
-    name: "enemy-hp",
-    current: 50
-  },
-  AT: {
-    name: "enemy-at",
-    usual: 50,
-    sp: 25
-  },
-  EV: 20
-};
-
-
-
+//駒はtest32(1).jsに移動。
 
 //id取り、グローバル変数
 const userHp = document.getElementById(user.HP.name);
@@ -58,6 +13,7 @@ let turn = 0;//行動順保管
 let choiceHP = user;//敵の攻撃対象
 let choiceHPnot = mage;//攻撃対象じゃない方
 let howAttack = enemy.AT.usual;//攻撃手段
+
 
 
 
@@ -79,11 +35,11 @@ btnDisabledEV(true);
 
 
 //各攻撃
-function showLog(className, logs) {//ログを作って見せる。
+function showLog(className, logs) {//「誰の」色で「何を」logで出す
   const p = document.createElement("p");
   p.classList.add(className); 
   p.textContent = logs;
-  log.appendChild(p);
+  log.insertBefore(p, log.firstChild);
 };
 function showWin (className) {
   showLog(className,"you win!");
@@ -95,11 +51,11 @@ function victory (className){
     return true;
   };
 } ;
-function btnDisabledAT (boolean) {
+function btnDisabledAT (boolean) {//攻撃ボタンの有無
   attackBtn.disabled = boolean;
   spAttackBtn.disabled = boolean;
 };
-function btnDisabledEV (boolean) {
+function btnDisabledEV (boolean) {//回避と庇うボタンの有無
   evasionBtn.disabled = boolean;
   protectBtn.disabled = boolean;
 };
@@ -167,21 +123,26 @@ function enemyAttack1 () {
     howAttack = enemy.AT.sp
   };
 
-  const dice = Dice100();
-  if (dice <= howAttack) {//攻撃成功時
-    let result = `1d100<=${howAttack} ＞ ${dice} ＞ 成功！`;
-    showLog("enemy",result);
-    btnDisabledEV(false);
+  setTimeout (() => {
+    const dice = Dice100();
+    if (dice <= howAttack) {//攻撃成功時
+      let result = `1d100<=${howAttack} ＞ ${dice} ＞ 成功！`;
+      showLog("enemy",result);
+      btnDisabledEV(false);
 
-    return true;
-  }else {//攻撃失敗時
-    let result = `1d100<=${howAttack} ＞ ${dice} ＞ 失敗`;
-    showLog("enemy",result);
-    turn += 1;
-    btnDisabledAT(false);
+    }else {//攻撃失敗時
+      let result = `1d100<=${howAttack} ＞ ${dice} ＞ 失敗`;
+      showLog("enemy",result);
+      turn += 1;
+      btnDisabledAT(false);
+    };
+  },500);  
+};
 
-    return false;
-  };
+function lateEnemyAttack () {
+  setTimeout(() => {
+    enemyAttack1();
+  },1000);
 };
 
 
@@ -201,20 +162,23 @@ function nextTurn (choice) {
 };
 
 
+
 function enemyAttack2 () {//かばう
   btnDisabledEV(true);
 
   let result = `${choiceHPnot.nameJ}は庇った`
   showLog(choiceHPnot.name,result);
 
-  const ATpoint = (howAttack === enemy.AT.usual ? Dice6() : Dice6()+Dice6());
-  result = `敵は${choiceHPnot.nameJ}に${ATpoint}のダメージを与えた！`;
-  showLog(choiceHPnot.name,result);
+  setTimeout(() => {
+    const ATpoint = (howAttack === enemy.AT.usual ? Dice6() : Dice6()+Dice6());
+    result = `敵は${choiceHPnot.nameJ}に${ATpoint}のダメージを与えた！`;
+    showLog(choiceHPnot.name,result);
 
-  choiceHPnot.HP.current -= ATpoint;
-  if (lose(choiceHPnot)) return;//敗北条件
+    choiceHPnot.HP.current -= ATpoint;
+    if (lose(choiceHPnot)) return;//敗北条件
 
-  nextTurn(choiceHPnot);
+    nextTurn(choiceHPnot);
+  },500);
 };
 
 function enemyAttack3 () {//回避
@@ -222,26 +186,33 @@ function enemyAttack3 () {//回避
 
   showLog(choiceHP.name,"回避判定");
 
-  const dice = Dice100();
-  if (dice <= choiceHP.EV) {//回避成功時
-    let result = `1d100<=${choiceHP.EV} ＞ ${dice} ＞ 成功`;
-    showLog(choiceHP.name,result);    
 
-    btnDisabledAT(false);
-    turn += 1;
-  }else {//回避失敗時
-    let result = `1d100<=${choiceHP.EV} ＞ ${dice} ＞ 失敗`;
-    showLog(choiceHP.name,result);  
+  setTimeout (() => {
 
-    const ATpoint = (howAttack === enemy.AT.usual ? Dice6() : Dice6()+Dice6());
-    result = `敵は${choiceHP.nameJ}に${ATpoint}のダメージを与えた！`;
-    showLog(choiceHP.name,result);
+    const dice = Dice100();
+    if (dice <= choiceHP.EV) {//回避成功時
+      let result = `1d100<=${choiceHP.EV} ＞ ${dice} ＞ 成功`;
+      showLog(choiceHP.name,result);    
 
-    choiceHP.HP.current -= ATpoint;
-    if (lose(choiceHP)) return;//敗北条件
+      btnDisabledAT(false);
+      turn += 1;
+    }else {//回避失敗時
+      let result = `1d100<=${choiceHP.EV} ＞ ${dice} ＞ 失敗`;
+      showLog(choiceHP.name,result);  
 
-    nextTurn(choiceHP);
-  };
+      setTimeout(() => {
+        const ATpoint = (howAttack === enemy.AT.usual ? Dice6() : Dice6()+Dice6());
+        result = `敵は${choiceHP.nameJ}に${ATpoint}のダメージを与えた！`;
+        showLog(choiceHP.name,result);
+
+        choiceHP.HP.current -= ATpoint;
+        if (lose(choiceHP)) return;//敗北条件
+
+        nextTurn(choiceHP);
+      },500);
+    };
+
+  },500);
 };
 
 
@@ -261,7 +232,7 @@ function userFalse(userAt,dice) {
   btnDisabledAT(true);
   turn += 1;
   if (turn === 1) {
-    enemyAttack1();
+    lateEnemyAttack();
   };        
 };
 
@@ -304,7 +275,7 @@ attackBtn.addEventListener("click", () => {
         setTimeout(() => {
           if (userAttack(Dice6())) return;
           if (turn === 1) {
-            enemyAttack1();
+            lateEnemyAttack();
           };        
         },2000);
       }else {//敵の回避成功時
@@ -317,7 +288,7 @@ attackBtn.addEventListener("click", () => {
           btnDisabledAT(true);
           turn += 1;
           if (turn === 1) {
-            enemyAttack1();
+            lateEnemyAttack();
 
           };   
         },2000);
@@ -386,7 +357,7 @@ spAttackBtn.addEventListener("click", () => {
         setTimeout(() => {
           if (userAttack(Dice6()+Dice6())) return;
           if (turn === 1) {
-            enemyAttack1();
+            lateEnemyAttack();
           };        
         },2000);
       }else {//敵の回避成功時
@@ -399,7 +370,7 @@ spAttackBtn.addEventListener("click", () => {
           btnDisabledAT(true);
           turn += 1;
           if (turn === 1) {
-            enemyAttack1();
+            lateEnemyAttack();
           };   
         },2000);
       };
@@ -457,5 +428,5 @@ protectBtn.addEventListener("click", () => {
 
 
 
-//やったこと：ログ表示、勝利と敗北のログ、オブジェクトにまとめた、ユーザーの攻撃二択、敵の攻撃内容のランダマイズ、,mageの設定、順番、敵の攻撃表示を遅らせる,エネミーの攻撃対象ランダマイズ、敵の攻撃を待ってる間ボタンを無効化,ダイスの概念、攻撃値のダイス化、回避の概念,ココフォリアにログを近づける,回避とかばうの選択化
-//やってること：CSSの整え、スピードの概念と順番（発展）,ログの遅延（敵側）、
+//やったこと：ログ表示、勝利と敗北のログ、オブジェクトにまとめた、ユーザーの攻撃二択、敵の攻撃内容のランダマイズ、,mageの設定、順番、敵の攻撃表示を遅らせる,エネミーの攻撃対象ランダマイズ、敵の攻撃を待ってる間ボタンを無効化,ダイスの概念、攻撃値のダイス化、回避の概念,ココフォリアにログを近づける,回避とかばうの選択化,ログの遅延
+//やってること：CSSの整え、スピードの概念と順番（発展）,クリファン判定,DEXの概念
