@@ -47,3 +47,19 @@ let enemy = {
   critical: false,
   fumble: false
 };
+
+
+//ダイス
+function Dice100 () { 
+  let num = Math.floor(Math.random() * 100) + 1;
+  console.log(num)
+  return num;
+};
+function Dice6 () { 
+  let num = Math.floor(Math.random() * 6) + 1;
+  console.log(num)
+  return num;
+};
+
+
+
