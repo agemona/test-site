@@ -1,4 +1,4 @@
-//駒とダイスとボタンfalseはtest32(1).jsに移動。
+//駒とダイスとボタンfalseはtest32(1).jsに移動
 
 //id取り、グローバル変数
 const userHp = document.getElementById(user.HP.name);
